@@ -7,13 +7,14 @@ import time
 #theta car_angle
 
 class car:
-    def __init__(self, zero_x, zero_y, multiply_x, multiply_y, car_x, car_y, car_r=3, car_collar="red", car_angle = 90):
+    #  轉換位置
+    def __init__(self, zero_x, zero_y, multiply_x, multiply_y, car_x, car_y, car_angle , car_r=3, car_collar="red"):
         self.zero_x = zero_x
         self.zero_y = zero_y
         self. multiply_x = multiply_x
         self. multiply_y = multiply_y
-        self.car_x = car_x
-        self.car_y = car_y
+        self.car_x = zero_x + car_x * multiply_x
+        self.car_y = zero_y + (car_y * -1 )*multiply_y
         self.car_r = car_r
         self.car_collar = car_collar
         self.car_angle = round(math.radians(car_angle),2)
@@ -71,27 +72,66 @@ multiply_x = width/60
 multiply_y = height/60
 zero_x = int(width/4)
 zero_y = int(height/1.1)
-car_x = zero_x
-car_y = zero_y
 
-car = car(zero_x, zero_y, multiply_x, multiply_y, car_x, car_y)
+#讀取檔案資料
+f = open(r'case01.txt')
+i = 0
+for line in f:
+    s = line.split(",")
+    if(i == 0):
+        print('line s ', s)
+        car_x = int(s[0])
+        car_y = int(s[1])
+        car_angle = int(s[2])
+
+    i = i + 1
+
+        
+car = car(zero_x, zero_y, multiply_x, multiply_y, car_x, car_y, car_angle)
 
 canvas = Canvas(tk, width=width, height=height, bg='ivory')
 canvas.pack(fill=BOTH, expand=1)
 canvas.pack()
+#我開心讀兩次檔
+f = open(r'case01.txt')
+i = 0
+x1 = 0
+y1 = 0 
+x2 = 0 
+y2 = 0
+for line in f:
+    s = line.split(",")
+    if(i > 0) :
+        if(i % 2 != 0):
+            x1 = int(s[0])
+            y1 = int(s[1])
+        else :
+            x2 = int(s[0])
+            y2 = int(s[1])
+    if(i == 2) : 
+        print('goal', x1, y1, x2, y2)
+        car.create_line(x1, y1, x2, y2, "red")
+
+    if(i > 2):
+        if(i != 3):
+            car.create_line(x1, y1, x2, y2, "blue")
+
+    i = i + 1
+    
+car.create_line(-12, 0, 12, 0, "black")
+
 # WALL
-car.create_line(-6, -3, -6, 22, "blue")
+""" car.create_line(-6, -3, -6, 22, "blue")
 car.create_line(-6, 22, 18, 22, "blue")
 car.create_line(18, 22, 18, 50, "blue")
 car.create_line(18, 50, 30, 50, "blue")
 car.create_line(30, 50, 30, 10, "blue")
 car.create_line(30, 10, 6, 10, "blue")
 car.create_line(6, 10, 6, -3, "blue")
-car.create_line(6, -3, -6, -3, "blue")
+car.create_line(6, -3, -6, -3, "blue") """
 
 # GOAL Line
-car.create_line(18, 40, 30, 40, "red")
-
+#car.create_line(18, 40, 30, 30, "red")
 
 
 # CAR
