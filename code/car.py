@@ -23,6 +23,7 @@ class car:
         self.rd = 0
         self.d = 0
         self.b = car_r * multiply_x
+        # x , y 左至右 上至下
         self.x1 = zero_x + -6 * multiply_x
         self.x2 = zero_x + 6 * multiply_x
         self.x3 = zero_x + 18 * multiply_x
@@ -53,7 +54,13 @@ class car:
         
 
         return canvas.create_oval(x0, y0, x1, y1, fill=self.car_collar)
-
+    
+    def coordinate_judge (self, x0, x1) :
+        if(x0 > x1) : 
+            return 1
+        else :
+            return 0
+        return 0
 
     def car_move(self, tk, car, theta):
 
@@ -96,6 +103,8 @@ class car:
 
         langle = self.car_angle - round(math.radians(45),2)
         rangle = self.car_angle + round(math.radians(45),2)
+        cx = 1
+        #sensor part
         #分三塊去做sensor part
         if(self.car_x >= self.x1 and self.car_x <= self.x2 and self.car_y >= self.y1):
             d1 = (self.car_y - self.y2) * (1/ math.sin(self.car_angle))
@@ -141,19 +150,21 @@ class car:
             d = self.d / multiply_x
             ld = self.ld / multiply_x
             rd = self.rd / multiply_x
-            print('self.d in zone 1 ', d, ld, rd )
+            #print('self.d in zone 1 ', d, ld, rd )
 
         elif(self.car_y <= self.y1 and self.car_y >= self.y2 ):
-            d1 = (self.car_y - self.y2) * (1/ math.sin(self.car_angle))
-            d1c = ((self.car_y - self.y2 ) * (1/math.tan(self.car_angle)))
+            #forward sensor
+            d1 = abs(self.car_y - self.y2) * (1/ math.sin(self.car_angle))
+            d1c = (abs(self.car_y - self.y2 ) * (1/math.tan(self.car_angle)))
             d2 = (self.car_y - self.y1) * (1/ math.sin(self.car_angle))
             d3 = (self.car_x - self.x4 ) * (1/ math.cos(self.car_angle))
 
-            d4 = ((self.car_y - self.y3 ) * (math.tan(self.car_angle)))
+            d4 = (abs(self.car_y - self.y3 ) * (1/ math.sin(self.car_angle)))
             d5 = (self.car_x - self.x3 ) * (1/ math.cos(self.car_angle))
-            d6 = (self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
+            #先不做判斷
+            d6 = -(self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
             print("y2, y1, x4, y3, x3, x1")
-            
+            #print('ddd', d1, d2, d3, d4, d5,d6 )
             if(d1 < 0 ):
                 d1 = 10000
             if(d2 < 0):
@@ -166,22 +177,24 @@ class car:
                 d5 = 10000
             if(d6 < 0):
                 d6 = 10000
-            print('self.x3', self.car_x + d1c , self.x3)
-            #判斷左邊
+            #print('self.x3', self.car_x + d1c , self.x3)
+            #判斷y2
             if(self.car_x + d1c >= self.x3 ):
                 print("d1 ininin")
                 #設為最大值
                 d1 = 10000
-            print('ddd', d1, d2, d3,d4, d5,d6 )
+            
 
             self.d = min(d1, d2, d3, d4, d5, d6) 
             d = self.d / self.multiply_x
             
-            ld1 = (self.car_y - self.y2) * (1/ math.sin(langle))
-            ld1c = ((self.car_y - self.y2 ) * (math.tan(langle)))
+            # left sensor
+            print('self.y2', self.car_y-self.y2)
+            ld1 = (self.car_y - self.y2) * abs(1/ math.sin(langle))
+            ld1c = (abs(self.car_y - self.y2 ) * (math.tan(langle)))
             ld2 = (self.car_y - self.y1) * (1/ math.sin(langle))
             ld3 = (self.car_x - self.x4 ) * (1/ math.cos(langle))
-            ld4 = ((self.car_y - self.y3 ) * (math.tan(langle)))
+            ld4 = (abs(self.car_y - self.y3 ) * (math.tan(langle)))
             ld5 = (self.car_x - self.x3 ) * (1/ math.cos(langle))
             ld6 = (self.car_x - self.x1 ) * (1/ math.cos(langle))
             if(ld1 < 0 ):
@@ -200,7 +213,8 @@ class car:
             if(self.car_x + ld1c < self.x3 ):
                 #設為最大值
                 ld1 = 10000
-            self.ld = min(ld1, ld2, ld3)
+            self.ld = min(ld1, ld2, ld3, ld4, ld5, ld6)
+            print('self.ld', ld1, ld2, ld3,ld4, ld5, ld6)
 
             ld = self.ld /self.multiply_x
 
@@ -231,7 +245,8 @@ class car:
             self.rd = min(rd1, rd2, rd3)
 
             rd = self.rd /self.multiply_x
-            print('self.d in zone 2', d, ld, rd)
+            print('Origin self.d in zone 2 = ', self.d, self.ld, self.rd)
+            print('self.d in zone 2 = ', d, ld, rd)
 
 
 
