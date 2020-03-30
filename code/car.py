@@ -17,8 +17,11 @@ class car:
         self.car_y = zero_y + (car_y * -1 )*multiply_y
         self.car_r = car_r
         self.car_collar = car_collar
+        self.car_orangle = car_angle
         self.car_angle = round(math.radians(car_angle),2)
         self.direction = 0
+        self.ldirection = 0
+        self.rdirection = 0
         self.ld = 0
         self.rd = 0
         self.d = 0
@@ -81,6 +84,8 @@ class car:
         tk.coords(car, (x0, y0, x1, y1))
 
         canvas.delete(self.direction)
+        canvas.delete(self.ldirection)
+        canvas.delete(self.rdirection)
         # direction line 
         #car_x = zero_x + car_x * multiply_x
         #car_y = zero_y + (car_y * -1 )*multiply_y
@@ -94,248 +99,300 @@ class car:
         self.direction = self.create_line(car_x1, car_y1, x2, y2, "red")
 
         #print('car_d', self.car_x, self.x1, self.x2, self.car_y, self.y1)
+        round(math.radians(car_angle),2)
+        langle =   self.car_angle + round(math.radians(45),2)
+        rangle = self.car_angle - round(math.radians(45),2)
 
-        langle = self.car_angle - round(math.radians(45),2)
-        rangle = self.car_angle + round(math.radians(45),2)
+        x2 = car_x1 + 6* math.cos(langle )
+        y2 = car_y1 + 6* math.sin(langle ) 
+        self.ldirection = self.create_line(car_x1, car_y1, x2, y2, "black")
+
+        x2 = car_x1 + 6* math.cos(rangle )
+        y2 = car_y1 + 6* math.sin(rangle ) 
+        self.rdirection = self.create_line(car_x1, car_y1, x2, y2, "black")
+        
         #sensor part
         #往回開就是腦袋開抽
         #boundary base
+        
+        #forward
+        #x1 boudanry
         x1d = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(self.car_angle)))
         x1dc = abs((self.car_x - self.x1 ) * (math.tan(self.car_angle)))
         
+
+        #x1 boundary judge
         if(self.car_y - x1dc <= self.y2 or x1d < 0):
             #設為最大值
             x1d = 10000
             
         else :
-            print('in x1d else')
             x1d = x1d / self.multiply_x
+
+        #print('x1d', x1d)
         
-        print('x1d', x1d)
-        
+        #x2 boundary
         x2d = (abs(self.car_x - self.x2 ) * (1/ math.cos(self.car_angle)))
         x2dc = (abs(self.car_x - self.x2 ) * (math.tan(self.car_angle)))
-        #print('x1dc', x2d, x2dc)
-        #print('car y' , self.car_y, self.y2, self.zero_y)
         
+        #x2 boundary judge
         if(self.car_y - x2dc <= self.y1 or x2d < 0):
             #設為最大值
             x2d = 10000
             
         else :
-            print('in x1d else')
+            
             x2d = x2d / self.multiply_x
         
-        print('x2d', x2d)
+        #print('x2d', x2d)
 
+        #x3 boundary
         x3d = (abs(self.car_x - self.x3 ) * -1 *(1/ math.cos(self.car_angle)))
         x3dc = (abs(self.car_x - self.x3 ) * (math.tan(self.car_angle)))
-        #print('x1dc', x3d, x3dc)
-        #print('car y' , self.car_y, self.y2, self.zero_y)
         
+        #x3 boundary judge
         if(self.car_y - x3dc <= self.y1 or x3d < 0):
             #設為最大值
             x3d = 10000
             
         else :
-            #print('in x1d else')
+            
             x3d = x3d / self.multiply_x
         
-        print('x3d', x3d)
+        #print('x3d', x3d)
 
+        #x4 boundary
         x4d = (abs(self.car_x - self.x4 )  * (1/ math.cos(self.car_angle)))
         x4dc = abs((self.car_x - self.x4 ) * (math.tan(self.car_angle)))
         
+        #x4 boundary judge
         if(self.car_y - x4dc <= self.y3 or x4d < 0):
             #設為最大值
             x4d = 10000
             
         else :
-           # print('in x4d else')
+           
             x4d = x4d / self.multiply_x
         
-        print('x4d', x4d)
-
+        #print('x4d', x4d)
+        
+        # y2 boundary
         y2d = (abs(self.car_y - self.y2) * (1/ math.sin(self.car_angle)))
         y2dc = abs((self.car_y - self.y2 ) * abs(1/math.tan(self.car_angle)))
 
+        # y2 boundary judge
         if(self.car_x + y2dc >= self.x3 or y2d < 0 ):
             y2d = 10000
         else :
             y2d = y2d / self.multiply_y
         
-        print('y2d', y2d)
+        #print('y2d', y2d)
 
+        # y1 boundary 
         y1d = (abs(self.car_y - self.y1) * -1 * (1/ math.sin(self.car_angle)))
         y1dc = abs((self.car_y - self.y1 ) * (1/math.tan(self.car_angle)))
 
-        #print('y1d ', y1d, y1dc)
+       #y1 boundary judge
         if(self.car_x + y1dc <= self.x2 or y1d < 0):
             y1d = 10000
         else :
             y1d = y1d / self.multiply_y
         
-        print('y1d', y1d)
+        #print('y1d', y1d)
 
-        
+        #y3 boundary 
         y3d = (abs(self.car_y - self.y3) * (1/ math.sin(self.car_angle)))
         y3dc = abs((self.car_y - self.y3 ) * abs(1/math.tan(self.car_angle)))
 
+        #y3 boundary judge
         if(self.car_x + y3dc >= self.x4 or y3d < 0 ):
             y3d = 10000
         else :
             y3d = y3d / self.multiply_y
         
-        print('y3d', y3d)
+        #print('y3d', y3d)
 
         print('d ', min(x1d, x2d, x3d, x4d, y1d, y2d, y3d))
+        d = min(x1d, x2d, x3d, x4d, y1d, y2d, y3d)
+        if(d <= 3) :
+            print('bang!')
 
-        """ #分三塊去做sensor part
-        if(self.car_x >= self.x1 and self.car_x <= self.x2 and self.car_y >= self.y1):
-            d1 = (self.car_y - self.y2) * (1/ math.sin(self.car_angle))
-            d2 = (self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
-            d3 = (self.car_x - self.x2 ) * (1/ math.cos(self.car_angle))
-            if(d1 < 0 ):
-                d1 = 10000
-            if(d2 < 0):
-                d2 = 10000
-            if(d3 < 0):
-                d3 = 10000
-            self.d = min(d1, d2, d3) 
-
-            ld1 = (self.car_y - self.y2) * (1/ math.sin(langle))
-            ld2 = (self.car_x - self.x1 ) * (1/ math.cos(langle))
-            ld3 = (self.car_x - self.x2 ) * (1/ math.cos(langle))
-            if(ld1 < 0 ):
-                ld1 = 10000
-            if(ld2 < 0):
-                ld2 = 10000
-            if(ld3 < 0):
-                ld3 = 10000
-            self.ld = min(ld1, ld2, ld3) 
-
-            rd1 = ((self.car_y - self.y2) * (1/ math.sin(rangle)))
-            rd2 =  ((self.car_x - self.x1 ) * (1/ math.cos(rangle)))
-            rd3 = ((self.car_x - self.x2 ) * (1/ math.cos(rangle)))
-            rd3c = ((self.car_x - self.x2 ) * (math.tan(rangle)))
-            if(rd1 < 0 ):
-                rd1 = 10000
-            if(rd2 < 0):
-                rd2 = 10000
-            if(rd3 < 0):
-                rd3 = 10000
-            #判斷右邊
-            if(self.car_y - rd3c < self.y1 ):
-                #設為最大值
-                rd3 = 10000
-
-            self.rd = min(rd1, rd2, rd3)
-
-            #car_x = zero_x + car_x * multiply_x
-            d = self.d / multiply_x
-            ld = self.ld / multiply_x
-            rd = self.rd / multiply_x
-            #print('self.d in zone 1 ', d, ld, rd )
-
-        elif(self.car_y <= self.y1 and self.car_y >= self.y2 ):
-            #forward sensor
-            d1 = abs(self.car_y - self.y2) * (1/ math.sin(self.car_angle))
-            d1c = (abs(self.car_y - self.y2 ) * (1/math.tan(self.car_angle)))
-            d2 = (self.car_y - self.y1) * (1/ math.sin(self.car_angle))
-            d3 = (self.car_x - self.x4 ) * (1/ math.cos(self.car_angle))
-
-            d4 = (abs(self.car_y - self.y3 ) * (1/ math.sin(self.car_angle)))
-            d5 = (self.car_x - self.x3 ) * (1/ math.cos(self.car_angle))
-            #先不做判斷
-            d6 = -(self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
-            print("y2, y1, x4, y3, x3, x1")
-            #print('ddd', d1, d2, d3, d4, d5,d6 )
-            if(d1 < 0 ):
-                d1 = 10000
-            if(d2 < 0):
-                d2 = 10000
-            if(d3 < 0):
-                d3 = 10000
-            if(d4 < 0):
-                d4 = 10000
-            if(d5 < 0):
-                d5 = 10000
-            if(d6 < 0):
-                d6 = 10000
-            #print('self.x3', self.car_x + d1c , self.x3)
-            #判斷y2
-            if(self.car_x + d1c >= self.x3 ):
-                print("d1 ininin")
-                #設為最大值
-                d1 = 10000
+        #left
+        x1ld = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(langle)))
+        x1ldc = abs((self.car_x - self.x1 ) * (math.tan(langle)))
+        
+        if(self.car_y - x1ldc <= self.y2 or x1ld < 0):
+            #設為最大值
+            x1ld = 10000
             
+        else :
 
-            self.d = min(d1, d2, d3, d4, d5, d6) 
-            d = self.d / self.multiply_x
+            x1ld = x1ld / self.multiply_x
+        
+       #print('x1ld', x1ld)
+        
+        x2ld = (abs(self.car_x - self.x2 ) * (1/ math.cos(langle)))
+        x2ldc = (abs(self.car_x - self.x2 ) * (math.tan(langle)))
+        
+        
+        if(self.car_y - x2ldc <= self.y1 or x2ld < 0):
+            #設為最大值
+            x2ld = 10000
             
-            # left sensor
-            print('self.y2', self.car_y-self.y2)
-            ld1 = (self.car_y - self.y2) * abs(1/ math.sin(langle))
-            ld1c = (abs(self.car_y - self.y2 ) * (math.tan(langle)))
-            ld2 = (self.car_y - self.y1) * (1/ math.sin(langle))
-            ld3 = (self.car_x - self.x4 ) * (1/ math.cos(langle))
-            ld4 = (abs(self.car_y - self.y3 ) * (math.tan(langle)))
-            ld5 = (self.car_x - self.x3 ) * (1/ math.cos(langle))
-            ld6 = (self.car_x - self.x1 ) * (1/ math.cos(langle))
-            if(ld1 < 0 ):
-                ld1 = 10000
-            if(ld2 < 0):
-                ld2 = 10000
-            if(ld3 < 0):
-                ld3 = 10000
-            if(ld4 < 0):
-                ld4 = 10000
-            if(ld5 < 0):
-                ld5 = 10000
-            if(ld6 < 0):
-                ld6 = 10000
-            #判斷左邊
-            if(self.car_x + ld1c < self.x3 ):
-                #設為最大值
-                ld1 = 10000
-            self.ld = min(ld1, ld2, ld3, ld4, ld5, ld6)
-            print('self.ld', ld1, ld2, ld3,ld4, ld5, ld6)
+        else :
+            x2ld = x2ld / self.multiply_x
+        
+        #print('x2ld', x2ld)
 
-            ld = self.ld /self.multiply_x
+        x3ld = (abs(self.car_x - self.x3 ) * -1 *(1/ math.cos(langle)))
+        x3ldc = (abs(self.car_x - self.x3 ) * (math.tan(langle)))
+        
+        
+        if(self.car_y - x3ldc <= self.y1 or x3ld < 0):
+            #設為最大值
+            x3ld = 10000
+            
+        else :
+            
+            x3ld = x3ld / self.multiply_x
+        
+        #print('x3ld', x3ld)
 
-            rd1 = (self.car_y - self.y2) * (1/ math.sin(rangle))
-            rd1c = ((self.car_y - self.y2 ) * (math.tan(rangle)))
-            rd2 = (self.car_y - self.y1) * (1/ math.sin(rangle))
-            rd3 = (self.car_x - self.x4 ) * (1/ math.cos(rangle))
-            rd4 = ((self.car_y - self.y3 ) * (math.tan(rangle)))
-            rd5 = (self.car_x - self.x3 ) * (1/ math.cos(rangle))
-            rd6 = (self.car_x - self.x1 ) * (1/ math.cos(rangle))
-            if(rd1 < 0 ):
-                rd1 = 10000
-            if(rd2 < 0):
-                rd2 = 10000
-            if(rd3 < 0):
-                rd3 = 10000
-            if(rd4 < 0):
-                rd4 = 10000
-            if(rd5 < 0):
-                ld5 = 10000
-            if(rd6 < 0):
-                rd6 = 10000
+        x4ld = (abs(self.car_x - self.x4 )  * (1/ math.cos(langle)))
+        x4ldc = abs((self.car_x - self.x4 ) * (math.tan(langle)))
+        
+        if(self.car_y - x4ldc <= self.y3 or x4ld < 0):
+            #設為最大值
+            x4ld = 10000
+            
+        else :
+           
+            x4ld = x4ld / self.multiply_x
+        
+        #print('x4ld', x4ld)
 
-            if(self.car_x + rd1c < self.x3 ):
-                #設為最大值
-                rd1 = 10000
+        y2ld = (abs(self.car_y - self.y2) * (1/ math.sin(langle)))
+        y2ldc = abs((self.car_y - self.y2 ) * abs(1/math.tan(langle)))
 
-            self.rd = min(rd1, rd2, rd3)
+        if(self.car_x + y2ldc >= self.x3 or y2ld < 0 ):
+            y2ld = 10000
+        else :
+            y2ld = y2ld / self.multiply_y
+        
+        #print('y2ld', y2ld)
 
-            rd = self.rd /self.multiply_x
-            print('Origin self.d in zone 2 = ', self.d, self.ld, self.rd)
-            print('self.d in zone 2 = ', d, ld, rd)
+        y1ld = (abs(self.car_y - self.y1) * -1 * (1/ math.sin(langle)))
+        y1ldc = abs((self.car_y - self.y1 ) * (1/math.tan(langle)))
 
- """
+        
+        if(self.car_x + y1ldc <= self.x2 or y1ld < 0):
+            y1ld = 10000
+        else :
+            y1ld = y1ld / self.multiply_y
+        
+        #print('y1ld', y1ld)
 
+        
+        y3ld = (abs(self.car_y - self.y3) * (1/ math.sin(langle)))
+        y3ldc = abs((self.car_y - self.y3 ) * abs(1/math.tan(langle)))
 
+        if(self.car_x + y3ldc >= self.x4 or y3ld < 0 ):
+            y3ld = 10000
+        else :
+            y3ld = y3ld / self.multiply_y
+        
+        #print('y3ld', y3ld)
+
+        print('ld ', min(x1ld, x2ld, x3ld, x4ld, y1ld, y2ld, y3ld))
+        ld = min(x1ld, x2ld, x3ld, x4ld, y1ld, y2ld, y3ld)
+        if(ld <= 3):
+            print('bang!')
+
+        #right
+        x1rd = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(rangle)))
+        x1rdc = abs((self.car_x - self.x1 ) * (math.tan(rangle)))
+        
+        if(self.car_y - x1rdc <= self.y2 or x1rd < 0):
+            #設為最大值
+            x1rd = 10000
+            
+        else :
+            x1rd = x1rd / self.multiply_x
+        
+        #print('x1rd', x1rd)
+        
+        x2rd = (abs(self.car_x - self.x2 ) * (1/ math.cos(rangle)))
+        x2rdc = (abs(self.car_x - self.x2 ) * (math.tan(rangle)))
+        
+        
+        if(self.car_y - x2rdc <= self.y1 or x2rd < 0):
+            #設為最大值
+            x2rd = 10000
+            
+        else :
+            
+            x2rd = x2rd / self.multiply_x
+        
+        #print('x2rd', x2rd)
+
+        x3rd = (abs(self.car_x - self.x3 ) * -1 *(1/ math.cos(rangle)))
+        x3rdc = (abs(self.car_x - self.x3 ) * (math.tan(rangle)))
+        
+        if(self.car_y - x3rdc <= self.y1 or x3rd < 0):
+            #設為最大值
+            x3rd = 10000
+            
+        else :
+            x3rd = x3rd / self.multiply_x
+        
+        #print('x3rd', x3rd)
+
+        x4rd = (abs(self.car_x - self.x4 )  * (1/ math.cos(rangle)))
+        x4rdc = abs((self.car_x - self.x4 ) * (math.tan(rangle)))
+        
+        if(self.car_y - x4rdc <= self.y3 or x4rd < 0):
+            #設為最大值
+            x4rd = 10000
+            
+        else :
+            x4rd = x4rd / self.multiply_x
+        
+        #print('x4rd', x4rd)
+
+        y2rd = (abs(self.car_y - self.y2) * (1/ math.sin(rangle)))
+        y2rdc = abs((self.car_y - self.y2 ) * abs(1/math.tan(rangle)))
+
+        if(self.car_x + y2rdc >= self.x3 or y2rd < 0 ):
+            y2rd = 10000
+        else :
+            y2rd = y2rd / self.multiply_y
+        
+        #print('y2rd', y2rd)
+
+        y1ld = (abs(self.car_y - self.y1) * -1 * (1/ math.sin(rangle)))
+        y1ldc = abs((self.car_y - self.y1 ) * (1/math.tan(rangle)))
+
+        if(self.car_x + y1ldc <= self.x2 or y1ld < 0):
+            y1ld = 10000
+        else :
+            y1ld = y1ld / self.multiply_y
+        
+
+        
+        y3rd = (abs(self.car_y - self.y3) * (1/ math.sin(rangle)))
+        y3rdc = abs((self.car_y - self.y3 ) * abs(1/math.tan(rangle)))
+
+        if(self.car_x + y3rdc >= self.x4 or y3rd < 0 ):
+            y3rd = 10000
+        else :
+            y3rd = y3rd / self.multiply_y
+        
+        #print('y3rd', y3rd)
+
+        print('rd ', min(x1rd, x2rd, x3rd, x4rd, y1ld, y2rd, y3rd))
+        rd = min(x1rd, x2rd, x3rd, x4rd, y1ld, y2rd, y3rd)
+        if(rd <= 3) :
+            print('bang')
 
 
 # Initial Form 
