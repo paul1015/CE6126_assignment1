@@ -55,12 +55,6 @@ class car:
 
         return canvas.create_oval(x0, y0, x1, y1, fill=self.car_collar)
     
-    def coordinate_judge (self, x0, x1) :
-        if(x0 > x1) : 
-            return 1
-        else :
-            return 0
-        return 0
 
     def car_move(self, tk, car, theta):
 
@@ -103,9 +97,100 @@ class car:
 
         langle = self.car_angle - round(math.radians(45),2)
         rangle = self.car_angle + round(math.radians(45),2)
-        cx = 1
         #sensor part
-        #分三塊去做sensor part
+        #往回開就是腦袋開抽
+        #boundary base
+        x1d = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(self.car_angle)))
+        x1dc = abs((self.car_x - self.x1 ) * (math.tan(self.car_angle)))
+        
+        if(self.car_y - x1dc <= self.y2 or x1d < 0):
+            #設為最大值
+            x1d = 10000
+            
+        else :
+            print('in x1d else')
+            x1d = x1d / self.multiply_x
+        
+        print('x1d', x1d)
+        
+        x2d = (abs(self.car_x - self.x2 ) * (1/ math.cos(self.car_angle)))
+        x2dc = (abs(self.car_x - self.x2 ) * (math.tan(self.car_angle)))
+        #print('x1dc', x2d, x2dc)
+        #print('car y' , self.car_y, self.y2, self.zero_y)
+        
+        if(self.car_y - x2dc <= self.y1 or x2d < 0):
+            #設為最大值
+            x2d = 10000
+            
+        else :
+            print('in x1d else')
+            x2d = x2d / self.multiply_x
+        
+        print('x2d', x2d)
+
+        x3d = (abs(self.car_x - self.x3 ) * -1 *(1/ math.cos(self.car_angle)))
+        x3dc = (abs(self.car_x - self.x3 ) * (math.tan(self.car_angle)))
+        #print('x1dc', x3d, x3dc)
+        #print('car y' , self.car_y, self.y2, self.zero_y)
+        
+        if(self.car_y - x3dc <= self.y1 or x3d < 0):
+            #設為最大值
+            x3d = 10000
+            
+        else :
+            #print('in x1d else')
+            x3d = x3d / self.multiply_x
+        
+        print('x3d', x3d)
+
+        x4d = (abs(self.car_x - self.x4 )  * (1/ math.cos(self.car_angle)))
+        x4dc = abs((self.car_x - self.x4 ) * (math.tan(self.car_angle)))
+        
+        if(self.car_y - x4dc <= self.y3 or x4d < 0):
+            #設為最大值
+            x4d = 10000
+            
+        else :
+           # print('in x4d else')
+            x4d = x4d / self.multiply_x
+        
+        print('x4d', x4d)
+
+        y2d = (abs(self.car_y - self.y2) * (1/ math.sin(self.car_angle)))
+        y2dc = abs((self.car_y - self.y2 ) * abs(1/math.tan(self.car_angle)))
+
+        if(self.car_x + y2dc >= self.x3 or y2d < 0 ):
+            y2d = 10000
+        else :
+            y2d = y2d / self.multiply_y
+        
+        print('y2d', y2d)
+
+        y1d = (abs(self.car_y - self.y1) * -1 * (1/ math.sin(self.car_angle)))
+        y1dc = abs((self.car_y - self.y1 ) * (1/math.tan(self.car_angle)))
+
+        #print('y1d ', y1d, y1dc)
+        if(self.car_x + y1dc <= self.x2 or y1d < 0):
+            y1d = 10000
+        else :
+            y1d = y1d / self.multiply_y
+        
+        print('y1d', y1d)
+
+        
+        y3d = (abs(self.car_y - self.y3) * (1/ math.sin(self.car_angle)))
+        y3dc = abs((self.car_y - self.y3 ) * abs(1/math.tan(self.car_angle)))
+
+        if(self.car_x + y3dc >= self.x4 or y3d < 0 ):
+            y3d = 10000
+        else :
+            y3d = y3d / self.multiply_y
+        
+        print('y3d', y3d)
+
+        print('d ', min(x1d, x2d, x3d, x4d, y1d, y2d, y3d))
+
+        """ #分三塊去做sensor part
         if(self.car_x >= self.x1 and self.car_x <= self.x2 and self.car_y >= self.y1):
             d1 = (self.car_y - self.y2) * (1/ math.sin(self.car_angle))
             d2 = (self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
@@ -248,7 +333,7 @@ class car:
             print('Origin self.d in zone 2 = ', self.d, self.ld, self.rd)
             print('self.d in zone 2 = ', d, ld, rd)
 
-
+ """
 
 
 
