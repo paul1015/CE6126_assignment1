@@ -29,7 +29,7 @@ class car:
         self.x4 = zero_x + 30 * multiply_x
         self.y1 = zero_y + -10 * multiply_y
         self.y2 = zero_y + -22* multiply_y
-        self.y3 = zero_y + -30 * multiply_y
+        self.y3 = zero_y + -40 * multiply_y
 
 
     def create_line(self, x1, y1, x2, y2, color):
@@ -61,7 +61,7 @@ class car:
         theta = round(math.radians(theta),2)
         # cos(a + b) = cos(a) * cos(b) - sin(a) * sin(b) 
         # sin(a + b) = sin(a) * cos(b) +   sin(b) * cos(a) 
-        print(' t car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
+        #print(' t car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
         #self.car_x = self.car_x + math.cos(self.car_angle + theta) + (math.sin(theta) * math.sin(self.car_angle))
         #self.car_y = self.car_y - (math.sin(self.car_angle + theta) - (math.sin(theta)) * math.cos(self.car_angle))
         #self.car_angle = self.car_angle - math.asin(2 * math.sin(theta) / self.car_r)
@@ -69,7 +69,7 @@ class car:
         self.car_y = self.car_y -  10*(math.sin(self.car_angle) * math.cos(theta))
         self.car_angle = self.car_angle - math.asin(2 * math.sin(theta) / self.car_r)
 
-        print(' t+1 car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
+        #print(' t+1 car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
     
         x0 = self.car_x - self.car_r*self.multiply_x
         y0 = self.car_y - self.car_r*self.multiply_y
@@ -92,32 +92,150 @@ class car:
 
         self.direction = self.create_line(car_x1, car_y1, x2, y2, "red")
 
-        print('car_d', self.car_x, self.x1, self.x2, self.car_y, self.y1)
+        #print('car_d', self.car_x, self.x1, self.x2, self.car_y, self.y1)
 
         langle = self.car_angle - round(math.radians(45),2)
         rangle = self.car_angle + round(math.radians(45),2)
-        #分四塊去運算
+        #分三塊去做sensor part
         if(self.car_x >= self.x1 and self.car_x <= self.x2 and self.car_y >= self.y1):
-            d11 = abs(self.car_y - self.y2) * (1/ math.sin(self.car_angle))
-            d12 = abs(self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
-            d13 = abs(self.car_x - self.x2 ) * (1/ math.cos(self.car_angle))
-            self.d = min(d11, d12, d13,) 
+            d1 = (self.car_y - self.y2) * (1/ math.sin(self.car_angle))
+            d2 = (self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
+            d3 = (self.car_x - self.x2 ) * (1/ math.cos(self.car_angle))
+            if(d1 < 0 ):
+                d1 = 10000
+            if(d2 < 0):
+                d2 = 10000
+            if(d3 < 0):
+                d3 = 10000
+            self.d = min(d1, d2, d3) 
 
-            ld1 = abs(self.car_y - self.y2) * (1/ math.sin(langle))
-            ld2 = abs(self.car_x - self.x1 ) * (1/ math.cos(langle))
-            ld3 = abs(self.car_x - self.x2 ) * (1/ math.cos(langle))
+            ld1 = (self.car_y - self.y2) * (1/ math.sin(langle))
+            ld2 = (self.car_x - self.x1 ) * (1/ math.cos(langle))
+            ld3 = (self.car_x - self.x2 ) * (1/ math.cos(langle))
+            if(ld1 < 0 ):
+                ld1 = 10000
+            if(ld2 < 0):
+                ld2 = 10000
+            if(ld3 < 0):
+                ld3 = 10000
             self.ld = min(ld1, ld2, ld3) 
 
-            c = ((self.x2 - self.car_x) * (self.x2 - self.car_x) - (self.y1 - self.car_y) *  (self.y1 - self.car_y)) * 0.5
-            rd1 = abs(self.car_y - self.y2) * (1/ math.sin(rangle))
-            rd2 =  abs(self.car_x - self.x1 ) * (1/ math.cos(rangle))
-            rd3 = abs(self.car_x - self.x2 ) * (1/ math.cos(rangle))
-            self.rd = min(abs(self.car_y - self.y2) * (1/ math.sin(rangle)),  
-                     abs(self.car_x - self.x1 ) * (1/ math.cos(rangle)),
-                     abs(self.car_x - self.x2 ) * (1/ math.cos(rangle)),
-                    ) 
-            print('self.d ', self.d, self.ld, self.rd )
-        
+            rd1 = ((self.car_y - self.y2) * (1/ math.sin(rangle)))
+            rd2 =  ((self.car_x - self.x1 ) * (1/ math.cos(rangle)))
+            rd3 = ((self.car_x - self.x2 ) * (1/ math.cos(rangle)))
+            rd3c = ((self.car_x - self.x2 ) * (math.tan(rangle)))
+            if(rd1 < 0 ):
+                rd1 = 10000
+            if(rd2 < 0):
+                rd2 = 10000
+            if(rd3 < 0):
+                rd3 = 10000
+            #判斷右邊
+            if(self.car_y - rd3c < self.y1 ):
+                #設為最大值
+                rd3 = 10000
+
+            self.rd = min(rd1, rd2, rd3)
+
+            #car_x = zero_x + car_x * multiply_x
+            d = self.d / multiply_x
+            ld = self.ld / multiply_x
+            rd = self.rd / multiply_x
+            print('self.d in zone 1 ', d, ld, rd )
+
+        elif(self.car_y <= self.y1 and self.car_y >= self.y2 ):
+            d1 = (self.car_y - self.y2) * (1/ math.sin(self.car_angle))
+            d1c = ((self.car_y - self.y2 ) * (1/math.tan(self.car_angle)))
+            d2 = (self.car_y - self.y1) * (1/ math.sin(self.car_angle))
+            d3 = (self.car_x - self.x4 ) * (1/ math.cos(self.car_angle))
+
+            d4 = ((self.car_y - self.y3 ) * (math.tan(self.car_angle)))
+            d5 = (self.car_x - self.x3 ) * (1/ math.cos(self.car_angle))
+            d6 = (self.car_x - self.x1 ) * (1/ math.cos(self.car_angle))
+            print("y2, y1, x4, y3, x3, x1")
+            
+            if(d1 < 0 ):
+                d1 = 10000
+            if(d2 < 0):
+                d2 = 10000
+            if(d3 < 0):
+                d3 = 10000
+            if(d4 < 0):
+                d4 = 10000
+            if(d5 < 0):
+                d5 = 10000
+            if(d6 < 0):
+                d6 = 10000
+            print('self.x3', self.car_x + d1c , self.x3)
+            #判斷左邊
+            if(self.car_x + d1c >= self.x3 ):
+                print("d1 ininin")
+                #設為最大值
+                d1 = 10000
+            print('ddd', d1, d2, d3,d4, d5,d6 )
+
+            self.d = min(d1, d2, d3, d4, d5, d6) 
+            d = self.d / self.multiply_x
+            
+            ld1 = (self.car_y - self.y2) * (1/ math.sin(langle))
+            ld1c = ((self.car_y - self.y2 ) * (math.tan(langle)))
+            ld2 = (self.car_y - self.y1) * (1/ math.sin(langle))
+            ld3 = (self.car_x - self.x4 ) * (1/ math.cos(langle))
+            ld4 = ((self.car_y - self.y3 ) * (math.tan(langle)))
+            ld5 = (self.car_x - self.x3 ) * (1/ math.cos(langle))
+            ld6 = (self.car_x - self.x1 ) * (1/ math.cos(langle))
+            if(ld1 < 0 ):
+                ld1 = 10000
+            if(ld2 < 0):
+                ld2 = 10000
+            if(ld3 < 0):
+                ld3 = 10000
+            if(ld4 < 0):
+                ld4 = 10000
+            if(ld5 < 0):
+                ld5 = 10000
+            if(ld6 < 0):
+                ld6 = 10000
+            #判斷左邊
+            if(self.car_x + ld1c < self.x3 ):
+                #設為最大值
+                ld1 = 10000
+            self.ld = min(ld1, ld2, ld3)
+
+            ld = self.ld /self.multiply_x
+
+            rd1 = (self.car_y - self.y2) * (1/ math.sin(rangle))
+            rd1c = ((self.car_y - self.y2 ) * (math.tan(rangle)))
+            rd2 = (self.car_y - self.y1) * (1/ math.sin(rangle))
+            rd3 = (self.car_x - self.x4 ) * (1/ math.cos(rangle))
+            rd4 = ((self.car_y - self.y3 ) * (math.tan(rangle)))
+            rd5 = (self.car_x - self.x3 ) * (1/ math.cos(rangle))
+            rd6 = (self.car_x - self.x1 ) * (1/ math.cos(rangle))
+            if(rd1 < 0 ):
+                rd1 = 10000
+            if(rd2 < 0):
+                rd2 = 10000
+            if(rd3 < 0):
+                rd3 = 10000
+            if(rd4 < 0):
+                rd4 = 10000
+            if(rd5 < 0):
+                ld5 = 10000
+            if(rd6 < 0):
+                rd6 = 10000
+
+            if(self.car_x + rd1c < self.x3 ):
+                #設為最大值
+                rd1 = 10000
+
+            self.rd = min(rd1, rd2, rd3)
+
+            rd = self.rd /self.multiply_x
+            print('self.d in zone 2', d, ld, rd)
+
+
+
+
 
 
 # Initial Form 
