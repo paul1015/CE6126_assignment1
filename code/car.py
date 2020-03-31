@@ -73,12 +73,21 @@ class car:
         self.car_y = self.car_y -  10*(math.sin(self.car_angle) * math.cos(theta))
         self.car_angle = self.car_angle - math.asin(2 * math.sin(theta) / self.car_r)
 
+        """ self.car_x = zero_x + car_x * multiply_x
+        self.car_y = zero_y + (car_y * -1 )*multiply_y """
+        print('car Posintion ', (self.car_x - zero_x) /self.multiply_x , -1 * (self.car_y - zero_y) / self.multiply_y)
+        
+        """ self.car_angle = round(math.radians(car_angle),2) """
+        print('car angle', self.car_angle)
+
         #print(' t+1 car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
     
         x0 = self.car_x - self.car_r*self.multiply_x
         y0 = self.car_y - self.car_r*self.multiply_y
         x1 = self.car_x + self.car_r*self.multiply_x
         y1 = self.car_y + self.car_r*self.multiply_y
+
+       
         
         #draw the car
         tk.coords(car, (x0, y0, x1, y1))
@@ -217,7 +226,7 @@ class car:
         if(d <= 3) :
             print('bang!')
 
-        #left
+        #left sensor
         x1ld = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(langle)))
         x1ldc = abs((self.car_x - self.x1 ) * (math.tan(langle)))
         
@@ -229,7 +238,7 @@ class car:
 
             x1ld = x1ld / self.multiply_x
         
-       #print('x1ld', x1ld)
+        print('x1ld', x1ld)
         
         x2ld = (abs(self.car_x - self.x2 ) * (1/ math.cos(langle)))
         x2ldc = (abs(self.car_x - self.x2 ) * (math.tan(langle)))
@@ -242,13 +251,13 @@ class car:
         else :
             x2ld = x2ld / self.multiply_x
         
-        #print('x2ld', x2ld)
+        print('x2ld', x2ld)
 
         x3ld = (abs(self.car_x - self.x3 ) * -1 *(1/ math.cos(langle)))
-        x3ldc = (abs(self.car_x - self.x3 ) * (math.tan(langle)))
+        x3ldc = abs((self.car_x - self.x3 ) * (math.tan(langle)))
         
-        
-        if(self.car_y - x3ldc <= self.y1 or x3ld < 0):
+        print('???? ', x3ld, x3ldc, self.car_y, self.y1)
+        if(self.car_y - x3ldc <= self.y3 or x3ld < 0):
             #設為最大值
             x3ld = 10000
             
@@ -256,7 +265,7 @@ class car:
             
             x3ld = x3ld / self.multiply_x
         
-        #print('x3ld', x3ld)
+        print('x3ld', x3ld)
 
         x4ld = (abs(self.car_x - self.x4 )  * (1/ math.cos(langle)))
         x4ldc = abs((self.car_x - self.x4 ) * (math.tan(langle)))
@@ -269,7 +278,7 @@ class car:
            
             x4ld = x4ld / self.multiply_x
         
-        #print('x4ld', x4ld)
+        print('x4ld', x4ld)
 
         y2ld = (abs(self.car_y - self.y2) * (1/ math.sin(langle)))
         y2ldc = abs((self.car_y - self.y2 ) * abs(1/math.tan(langle)))
@@ -279,7 +288,7 @@ class car:
         else :
             y2ld = y2ld / self.multiply_y
         
-        #print('y2ld', y2ld)
+        print('y2ld', y2ld)
 
         y1ld = (abs(self.car_y - self.y1) * -1 * (1/ math.sin(langle)))
         y1ldc = abs((self.car_y - self.y1 ) * (1/math.tan(langle)))
@@ -290,7 +299,7 @@ class car:
         else :
             y1ld = y1ld / self.multiply_y
         
-        #print('y1ld', y1ld)
+        print('y1ld', y1ld)
 
         
         y3ld = (abs(self.car_y - self.y3) * (1/ math.sin(langle)))
@@ -301,14 +310,14 @@ class car:
         else :
             y3ld = y3ld / self.multiply_y
         
-        #print('y3ld', y3ld)
+        print('y3ld', y3ld)
 
         print('ld ', min(x1ld, x2ld, x3ld, x4ld, y1ld, y2ld, y3ld))
         ld = min(x1ld, x2ld, x3ld, x4ld, y1ld, y2ld, y3ld)
         if(ld <= 3):
             print('bang!')
 
-        #right
+        #right sensor
         x1rd = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(rangle)))
         x1rdc = abs((self.car_x - self.x1 ) * (math.tan(rangle)))
         
@@ -393,6 +402,19 @@ class car:
         rd = min(x1rd, x2rd, x3rd, x4rd, y1ld, y2rd, y3rd)
         if(rd <= 3) :
             print('bang')
+        
+        dw = Label(canvas, text = 'd : ' + str(d), fg='white', bg='black')
+        dw.pack()
+        canvas.create_window(100, 100, window=dw)
+        
+        ldw = Label(canvas, text = 'ld : ' + str(ld), fg='white', bg='black')
+        ldw.pack()
+        canvas.create_window(100, 75, window=ldw)
+        
+        rdw = Label(canvas, text = 'rd : ' + str(rd), fg='white', bg='black')
+        rdw.pack()
+        canvas.create_window(100, 125, window=rdw)
+       
 
 
 # Initial Form 
