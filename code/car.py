@@ -34,6 +34,8 @@ class car:
         self.y1 = zero_y + -10 * multiply_y
         self.y2 = zero_y + -22* multiply_y
         self.y3 = zero_y + -50 * multiply_y
+        self.g1 = zero_y + -40 * multiply_y
+        self.g2 = zero_y + -37 * multiply_y
 
 
     def create_line(self, x1, y1, x2, y2, color):
@@ -59,19 +61,19 @@ class car:
         return canvas.create_oval(x0, y0, x1, y1, fill=self.car_collar)
     
     def sensor_distace(self, angle) :
-        #sensor
+        #sensor  sensor + angle judge
         x1d = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(angle)))
         x1dc = abs((self.car_x - self.x1 ) * (math.tan(angle)))
         
         if(self.car_y - x1dc <= self.y2 or x1d < 0):
             #設為最大值
             x1d = 10000
-            
+
         else :
 
             x1d = x1d / self.multiply_x
         
-        print('x1d', x1d)
+        #print('x1d', x1d)
         
         x2d = (abs(self.car_x - self.x2 ) * (1/ math.cos(angle)))
         x2dc = (abs(self.car_x - self.x2 ) * (math.tan(angle)))
@@ -84,12 +86,12 @@ class car:
         else :
             x2d = x2d / self.multiply_x
         
-        print('x2d', x2d)
+        #print('x2d', x2d)
 
         x3d = (abs(self.car_x - self.x3 ) * -1 *(1/ math.cos(angle)))
         x3dc = abs((self.car_x - self.x3 ) * (math.tan(angle)))
         
-        print('???? ', x3d, x3dc, self.car_y, self.y1)
+        #print('???? ', x3d, x3dc, self.car_y, self.y1)
         if(self.car_y - x3dc <= self.y3 or x3d < 0):
             #設為最大值
             x3d = 10000
@@ -98,7 +100,7 @@ class car:
             
             x3d = x3d / self.multiply_x
         
-        print('x3d', x3d)
+        #print('x3d', x3d)
 
         x4d = (abs(self.car_x - self.x4 )  * (1/ math.cos(angle)))
         x4dc = abs((self.car_x - self.x4 ) * (math.tan(angle)))
@@ -111,7 +113,7 @@ class car:
            
             x4d = x4d / self.multiply_x
         
-        print('x4d', x4d)
+        #print('x4d', x4d)
 
         y2d = (abs(self.car_y - self.y2) * (1/ math.sin(angle)))
         y2dc = abs((self.car_y - self.y2 ) * abs(1/math.tan(angle)))
@@ -121,7 +123,7 @@ class car:
         else :
             y2d = y2d / self.multiply_y
         
-        print('y2d', y2d)
+        #print('y2d', y2d)
 
         y1d = (abs(self.car_y - self.y1) * -1 * (1/ math.sin(angle)))
         y1dc = abs((self.car_y - self.y1 ) * (1/math.tan(angle)))
@@ -132,7 +134,7 @@ class car:
         else :
             y1d = y1d / self.multiply_y
         
-        print('y1d', y1d)
+        #print('y1d', y1d)
 
         
         y3d = (abs(self.car_y - self.y3) * (1/ math.sin(angle)))
@@ -143,14 +145,35 @@ class car:
         else :
             y3d = y3d / self.multiply_y
         
-        print('y3d', y3d)
+        #print('y3d', y3d)
 
-        print('d ', min(x1d, x2d, x3d, x4d, y1d, y2d, y3d))
+        #print('d ', min(x1d, x2d, x3d, x4d, y1d, y2d, y3d))
         d = min(x1d, x2d, x3d, x4d, y1d, y2d, y3d)
         if(d <= 3):
             return 0
         else :
             return d
+    def goalLine(self, angle):
+
+        #goal line distance
+        if(self.car_x >= self.x3 and self.car_x <= self.x4): 
+            print('in if ')
+
+            g1 = abs((self.car_y - self.g1 ) * abs(1/math.tan(angle)))
+            g2 = abs((self.car_y - self.g2 ) * abs(1/math.tan(angle)))
+            print('g1',self.car_y)
+            if(self.car_x - g1 >= self.x3 and self.car_x + g2 <=self.x4) :
+                #self.car_x = zero_x + car_x * multiply_x
+                #self.car_y = zero_y + (car_y * -1 )*multiply_y
+                x = ( self.car_x - zero_x ) / self.multiply_x
+                d =  -1 * (x )/4  +  (44.5 )
+                y = -1 *(self.car_y - zero_y) / self.multiply_y
+                print('goal d = ', d, y)
+                return d - y
+            else: 
+                return -1
+        return -1
+            
 
     def car_move(self, tk, car, theta):
 
@@ -168,10 +191,10 @@ class car:
 
         """ self.car_x = zero_x + car_x * multiply_x
         self.car_y = zero_y + (car_y * -1 )*multiply_y """
-        print('car Posintion ', (self.car_x - zero_x) /self.multiply_x , -1 * (self.car_y - zero_y) / self.multiply_y)
+        #print('car Posintion ', (self.car_x - zero_x) /self.multiply_x , -1 * (self.car_y - zero_y) / self.multiply_y)
         
         """ self.car_angle = round(math.radians(car_angle),2) """
-        print('car angle', self.car_angle)
+        #print('car angle', self.car_angle)
 
         #print(' t+1 car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
     
@@ -223,6 +246,10 @@ class car:
         d = self.sensor_distace(self.car_angle)
         ld = self.sensor_distace(langle)
         rd = self.sensor_distace(rangle)
+        gd = self.goalLine(self.car_angle)
+        print('goal line function output : ', gd)
+        if(gd <= 3 + 0.1 and gd >= 0):
+            print("Goal")
 
         if(d == 0 or ld == 0 or rd == 0):
             canvas.delete(self.d)
