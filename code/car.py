@@ -161,8 +161,8 @@ class car:
 
             g1 = abs((self.car_y - self.g1 ) * abs(1/math.tan(angle)))
             g2 = abs((self.car_y - self.g2 ) * abs(1/math.tan(angle)))
-            print('g1',self.car_y)
-            if(self.car_x - g1 >= self.x3 and self.car_x + g2 <=self.x4) :
+            if(g1):
+            #if(self.car_x - g1 >= self.x3 ) :
                 #self.car_x = zero_x + car_x * multiply_x
                 #self.car_y = zero_y + (car_y * -1 )*multiply_y
                 x = ( self.car_x - zero_x ) / self.multiply_x
@@ -247,11 +247,8 @@ class car:
         ld = self.sensor_distace(langle)
         rd = self.sensor_distace(rangle)
         gd = self.goalLine(self.car_angle)
-        print('goal line function output : ', gd)
-        if(gd <= 3 + 0.1 and gd >= 0):
-            print("Goal")
 
-        if(d == 0 or ld == 0 or rd == 0):
+        if(d == 0.1 or ld == 0.1 or rd == 0.1):
             canvas.delete(self.d)
             canvas.delete(self.ld)
             canvas.delete(self.rd)
@@ -272,6 +269,30 @@ class car:
             rdw = Label(canvas, text = 'rd : ' + str(rd), fg='white', bg='black')
             rdw.pack()
             self.rd = canvas.create_window(100, 125, window=rdw)
+
+        return (d, ld, rd, gd)
+
+    def fuuzzyRule(self, d, ld, rd):
+        d1 = d
+        d2 = ld - rd 
+        #規則1 
+        if(d1 >= 20 ):
+            return 0
+        if(d1 <= 20 and d1 >= 10 ):
+            if(d2 >= 8):
+                return -20
+            if(d2 < 8 and d2 >= -8):
+                return 0
+            else:
+                return 30
+        
+        else :
+            if(d2 >= 8):
+                return -20
+            if(d2 < 8 and d2 >= -8):
+                return 0
+            else:
+                return 30
        
 
 
@@ -341,53 +362,27 @@ car_obj = car.create_car()
 car.create_line(-12, 0, 12, 0, "black")
 
 
+d,ld,rd, gd = car.car_move(canvas, car_obj, 0)
+print('gd' , gd)
 while 1:
     """ car.car_move(canvas, car_obj)
     time.sleep(0.5) """
-    theta = int(input('Input the theta between +- 40: \n'))
+    """ theta = int(input('Input the theta between +- 40: \n'))
     if(theta == -1 ):
+        break """
+    #起始值 = 0
+    #邊界 >= 4
+    if(d >= 3.5 and ld >=3.5 and rd >= 3.5  ):
+        if(gd == -1):
+             gd = 100
+        if(gd >= 4):
+            t = car.fuuzzyRule(d, ld, rd)
+            d,ld,rd,gd = car.car_move(canvas, car_obj, t)
+            time.sleep(1)
+            tk.update()
+            canvas.update()
+    if(gd <= 4 and gd != -1):
+        print('goal')
         break
+        
 
-    car.car_move(canvas, car_obj, theta)
-
-    tk.update()
-    canvas.update()
-
-# tank.create_oval(30, 30, 570, 570, width=1.5)  # 横轴x
-# tank.create_line(30, 300, 570, 300, width=1.5, fill='red', dash=6)  # 网格,虚线
-# tank.create_line(300, 30, 300, 570, width=1.5, fill='red', dash=6)
-# id_obj = tank.create_oval(130, 130, 270, 270, width=0, fill='gray')  # 物体
-
-# def move_obj(tank, idx, pos):  # 移动坐标
-
-#     if pos == 1:
-#         tank.coords(idx, (330, 330, 470, 470))
-#     elif pos == 2:
-#         tank.coords(idx, (330, 130, 470, 270))
-#     elif pos == 3:
-#         tank.coords(idx, (130, 130, 270, 270))
-#     elif pos == 4:
-#         tank.coords(idx, (130, 330, 270, 470))
-#     else:
-#         return 0
-
-# while 1:
-#     move_obj(tank, id_obj, 1)
-#     time.sleep(0.5)
-#     tk.update_idletasks()
-#     tk.update()
-
-#     move_obj(tank, id_obj, 2)
-#     time.sleep(0.5)
-#     tk.update_idletasks()
-#     tk.update()
-
-#     move_obj(tank, id_obj, 3)
-#     time.sleep(0.5)
-#     tk.update_idletasks()
-#     tk.update()
-
-#     move_obj(tank, id_obj, 4)
-#     time.sleep(0.5)
-#     tk.update_idletasks()
-#     tk.update()
