@@ -153,26 +153,44 @@ class car:
             return 0
         else :
             return d
-    def goalLine(self, angle):
+    def distance(self) :
+        
+        d1 = 100
+        d2 = 100
+        d3 = 100
+        d4 = 100
+        d5 = 100
+        d6 = 100
+        d7 = 100
+        if(self.car_x < 6):
+            d1 = abs (self.car_x - self.x1)
+            d2 = abs (self.car_x - self.x2)
+            d6 = abs (self.car_y - self.y2)
+        elif(self.car_x < 18):
+            d1 = abs (self.car_x - self.x1)
+            d4 = abs (self.car_x - self.x4)
+            d5 = abs (self.car_y - self.y1)
+            d6 = abs (self.car_y - self.y2)
+        else :
+            d3 = abs (self.car_x - self.x3)
+            d4 = abs (self.car_x - self.x4)
+            d5 = abs (self.car_y - self.y1)
+            d4 = abs (self.car_y - self.y3)
+
+        print('distance', d1, d2, d3, d4, d5, d6, d7)
+        return min(d1, d2, d3, d4, d5, d6, d7)
+
+    def goalLine(self):
 
         #goal line distance
         if(self.car_x >= self.x3 and self.car_x <= self.x4): 
-            print('in if ')
-
-            g1 = abs((self.car_y - self.g1 ) * abs(1/math.tan(angle)))
-            g2 = abs((self.car_y - self.g2 ) * abs(1/math.tan(angle)))
-            if(g1):
-            #if(self.car_x - g1 >= self.x3 ) :
-                #self.car_x = zero_x + car_x * multiply_x
-                #self.car_y = zero_y + (car_y * -1 )*multiply_y
-                x = ( self.car_x - zero_x ) / self.multiply_x
-                d =  -1 * (x )/4  +  (44.5 )
-                y = -1 *(self.car_y - zero_y) / self.multiply_y
-                print('goal d = ', d, y)
-                return d - y
-            else: 
-                return -1
-        return -1
+            x = ( self.car_x - zero_x ) / self.multiply_x
+            d =  -1 * (x )/4  +  (44.5 )
+            y = -1 *(self.car_y - zero_y) / self.multiply_y
+            print('goal d = ', d, y)
+            return d - y
+        else: 
+            return -1
             
 
     def car_move(self, tk, car, theta):
@@ -246,7 +264,9 @@ class car:
         d = self.sensor_distace(self.car_angle)
         ld = self.sensor_distace(langle)
         rd = self.sensor_distace(rangle)
-        gd = self.goalLine(self.car_angle)
+        gd = self.goalLine()
+        dd = self.distance()
+        #gd = -1
 
         if(d == 0.1 or ld == 0.1 or rd == 0.1):
             canvas.delete(self.d)
@@ -270,9 +290,9 @@ class car:
             rdw.pack()
             self.rd = canvas.create_window(100, 125, window=rdw)
 
-        return (d, ld, rd, gd)
+        return (d, ld, rd, gd, dd)
 
-    def fuuzzyRule(self, d, ld, rd):
+    """ def fuuzzyRule(self, d, ld, rd):
         d1 = d
         d2 = ld - rd 
         #規則1 
@@ -292,7 +312,89 @@ class car:
             if(d2 < 8 and d2 >= -8):
                 return 0
             else:
-                return 30
+                return 30 """
+    def fuuzzyRule(self, d, ld, rd):
+        d1 = d
+        d2 = ld - rd 
+        d1a = 1
+        d2a = 1
+        al = 25
+        am = 40
+        ar = 70
+        a1 = 0
+        a2 = 0
+        a3 = 0
+        a4 = 0 
+        a5 = 0
+        a6 = 0
+        a7 = 0
+        a8 = 0
+        a9 = 0
+        #d1 is large 
+        if(d1 >= 15 ):
+            if(d1 < 20 ):
+                d1a = 1 * (d1 - 15) / 5
+            if(d2 >= 0):
+                if(d2 < 8):
+                    d2a = 1 * (d2 - 0) / 8
+                a1 = min(d1a, d2a)
+            if(d2 < 8 and d2 >= -8):
+                if(d2 > 0):
+                    d2a = 1 * (8- d2) / 8
+                else :
+                    d2a = 1 * (d2 + 8) / 8
+                a2 = min(d1a, d2a)
+            if(d2 < 0):
+                if(d2 < -8):
+                    d2a = 1 * abs(d2) / 8
+                a3 = min(d1a, d2a)
+        #d1 is middle
+        if(d1 < 20 and d1 >= 10 ):
+            if(d1 >= 15 ):
+                d1a = 1 * (20-d1) / 5
+            else:
+                d1a = 1 * (d1 - 10) / 5
+            if(d2 >= 0):
+                if(d2 < 8):
+                    d2a = 1 * (d2 - 0) / 8
+                a4 = min(d1a, d2a)
+            if(d2 < 8 and d2 >= -8):
+                if(d2 > 0):
+                    d2a = 1 * (8- d2) / 8
+                else :
+                    d2a = 1 * (d2 + 8) / 8
+                a5 = min(d1a, d2a)
+            if(d2 < 0):
+                if(d2 < -8):
+                    d2a = 1 * abs(d2) / 8
+                a6 = min(d1a, d2a)
+        #d1 is small
+        if(d1 < 15):
+            if(d1 >= 10 ):
+                d1a = 1 * (15-d1) / 5
+            
+            if(d2 >= 0):
+                if(d2 < 8):
+                    d2a = 1 * (d2 - 0) / 8
+                a7 = min(d1a, d2a)
+            if(d2 < 8 and d2 >= -8):
+                if(d2 > 0):
+                    d2a = 1 * (8- d2) / 8
+                else :
+                    d2a = 1 * (d2 + 8) / 8
+                a8 = min(d1a, d2a)
+            if(d2 < 0):
+                if(d2 < -8):
+                    d2a = 1 * abs(d2) / 8
+                a9 = min(d1a, d2a)
+        print('a', a1, a2, a3, a4, a5, a6, a7,a8, a9)
+
+        output = (a1 * al + a2 * am + a3 *ar +  a4 * al + a5 * am + a6 * am + a7 * al + a8 * am + a9 * ar ) / (a1 + a2 + a3 + a4 + a5 + a6 + a7 +a8 + a9)
+        print('return angle ', output - 40)
+        return (output - 40)
+   
+        
+        
        
 
 
@@ -361,8 +463,8 @@ car_obj = car.create_car()
 #起跑線 0,0
 car.create_line(-12, 0, 12, 0, "black")
 
-
-d,ld,rd, gd = car.car_move(canvas, car_obj, 0)
+t = 0
+d,ld,rd, gd, dd = car.car_move(canvas, car_obj, 0)
 print('gd' , gd)
 while 1:
     """ car.car_move(canvas, car_obj)
@@ -372,17 +474,18 @@ while 1:
         break """
     #起始值 = 0
     #邊界 >= 4
-    if(d >= 3.5 and ld >=3.5 and rd >= 3.5  ):
-        if(gd == -1):
-             gd = 100
-        if(gd >= 4):
-            t = car.fuuzzyRule(d, ld, rd)
-            d,ld,rd,gd = car.car_move(canvas, car_obj, t)
-            time.sleep(1)
-            tk.update()
-            canvas.update()
-    if(gd <= 4 and gd != -1):
-        print('goal')
-        break
+    
+    #if(d >= 3.1 and ld >=3.1 and rd >= 3.1  ):
+    if(gd == -1):
+        gd = 100
+    if(gd >= 3 and dd >=3):
+        print("t  = ", t)
+        t = car.fuuzzyRule(d, ld, rd)
+        d,ld,rd,gd, dd = car.car_move(canvas, car_obj, t)
+        time.sleep(0.7)
+        tk.update()
+        canvas.update()
+    else :
+        print('Stop')
         
 
