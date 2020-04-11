@@ -46,11 +46,6 @@ class car:
         
         # center coordinates, radius
 
-        """ x0 = self.zero_x + self.car_x * self.multiply_x - self.car_r*self.multiply_x
-        y0 = self.zero_y + (self.car_y * -1 ) * self.multiply_y - self.car_r*self.multiply_y
-        x1 = self.zero_x + self.car_x * self.multiply_x + self.car_r*self.multiply_x
-        y1 = self.zero_y + (self.car_y * -1 ) *self.multiply_y + self.car_r*self.multiply_y """
-
         x0 = self.car_x - self.car_r*self.multiply_x
         y0 = self.car_y - self.car_r*self.multiply_y
         x1 = self.car_x + self.car_r*self.multiply_x
@@ -194,27 +189,16 @@ class car:
             
 
     def car_move(self, tk, car, theta):
-
+        
+        degree = theta
         #角度換算
         theta = round(math.radians(theta),2)
-        # cos(a + b) = cos(a) * cos(b) - sin(a) * sin(b) 
-        # sin(a + b) = sin(a) * cos(b) +   sin(b) * cos(a) 
-        #print(' t car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
-        #self.car_x = self.car_x + math.cos(self.car_angle + theta) + (math.sin(theta) * math.sin(self.car_angle))
-        #self.car_y = self.car_y - (math.sin(self.car_angle + theta) - (math.sin(theta)) * math.cos(self.car_angle))
-        #self.car_angle = self.car_angle - math.asin(2 * math.sin(theta) / self.car_r)
+
+        #car momenton
         self.car_x = self.car_x + 10*(math.cos(self.car_angle) * math.cos(theta)) 
         self.car_y = self.car_y -  10*(math.sin(self.car_angle) * math.cos(theta))
         self.car_angle = self.car_angle - math.asin(2 * math.sin(theta) / self.car_r)
 
-        """ self.car_x = zero_x + car_x * multiply_x
-        self.car_y = zero_y + (car_y * -1 )*multiply_y """
-        #print('car Posintion ', (self.car_x - zero_x) /self.multiply_x , -1 * (self.car_y - zero_y) / self.multiply_y)
-        
-        """ self.car_angle = round(math.radians(car_angle),2) """
-        #print('car angle', self.car_angle)
-
-        #print(' t+1 car_ x = ', self.car_x, 'car_y = ', self.car_y, 'car_angle', self.car_angle)
     
         x0 = self.car_x - self.car_r*self.multiply_x
         y0 = self.car_y - self.car_r*self.multiply_y
@@ -266,7 +250,7 @@ class car:
         rd = self.sensor_distace(rangle)
         gd = self.goalLine()
         dd = self.distance()
-        #gd = -1
+      
 
         if(d == 0.1 or ld == 0.1 or rd == 0.1):
             canvas.delete(self.d)
@@ -289,30 +273,34 @@ class car:
             rdw = Label(canvas, text = 'rd : ' + str(rd), fg='white', bg='black')
             rdw.pack()
             self.rd = canvas.create_window(100, 125, window=rdw)
+        
+        #self.car_x = zero_x + car_x * multiply_x
+        #self.car_y = zero_y + (car_y * -1 )*multiply_y
+        x = (self.car_x - zero_x)/self.multiply_x
+        y = (self.car_y - zero_y)/self.multiply_y * -1
+        
+        # 開啟檔案
+        fp = open("train6D.txt", "a")
+ 
+        #寫入檔案
+        p = str(x) + " " + str(y) + " " + str(d) + " " + str(rd) + " " + str(ld) + " " + str(degree) + "\n"
+        fp.write(p)
+ 
+        # 關閉檔案
+        fp.close()
+
+        fp = open("train4D.txt", "a")
+ 
+        # 寫入檔案
+        p = str(d) + " " + str(rd) + " " + str(ld) + " " + str(degree) + "\n"
+        fp.write(p)
+ 
+        # 關閉檔案
+        fp.close()
 
         return (d, ld, rd, gd, dd)
 
-    """ def fuuzzyRule(self, d, ld, rd):
-        d1 = d
-        d2 = ld - rd 
-        #規則1 
-        if(d1 >= 20 ):
-            return 0
-        if(d1 <= 20 and d1 >= 10 ):
-            if(d2 >= 8):
-                return -20
-            if(d2 < 8 and d2 >= -8):
-                return 0
-            else:
-                return 30
-        
-        else :
-            if(d2 >= 8):
-                return -20
-            if(d2 < 8 and d2 >= -8):
-                return 0
-            else:
-                return 30 """
+    #模糊規則
     def fuuzzyRule(self, d, ld, rd):
         d1 = d
         d2 = ld - rd 
@@ -389,6 +377,7 @@ class car:
                 a9 = min(d1a, d2a)
         print('a', a1, a2, a3, a4, a5, a6, a7,a8, a9)
 
+        #final output
         output = (a1 * al + a2 * am + a3 *ar +  a4 * al + a5 * am + a6 * am + a7 * al + a8 * am + a9 * ar ) / (a1 + a2 + a3 + a4 + a5 + a6 + a7 +a8 + a9)
         print('return angle ', output - 40)
         return (output - 40)
@@ -464,8 +453,13 @@ car_obj = car.create_car()
 car.create_line(-12, 0, 12, 0, "black")
 
 t = 0
-d,ld,rd, gd, dd = car.car_move(canvas, car_obj, 0)
-print('gd' , gd)
+
+
+#初始角度 為 0
+d,ld,rd,gd, dd = car.car_move(canvas, car_obj, 0)
+
+dd = 100
+
 while 1:
     """ car.car_move(canvas, car_obj)
     time.sleep(0.5) """
@@ -480,12 +474,15 @@ while 1:
         gd = 100
     if(gd >= 3 and dd >=3):
         print("t  = ", t)
+        #fuzzy system
         t = car.fuuzzyRule(d, ld, rd)
+        #move based on fuzzy system
         d,ld,rd,gd, dd = car.car_move(canvas, car_obj, t)
         time.sleep(0.7)
         tk.update()
         canvas.update()
     else :
         print('Stop')
+        break
         
 
