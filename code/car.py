@@ -304,6 +304,7 @@ class car:
 
     #模糊演算法
     def fuuzzyRule(self, d, ld, rd):
+        #d1, d2 兩個模糊規則判定
         d1 = d
         d2 = ld - rd 
         d1a = 1
