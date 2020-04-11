@@ -7,7 +7,7 @@ import time
 #theta car_angle
 
 class car:
-    #  轉換位置
+    #  初始化資料 主要是輸入座標和實際座標上的轉換
     def __init__(self, zero_x, zero_y, multiply_x, multiply_y, car_x, car_y, car_angle , car_r=3, car_collar="red"):
         self.zero_x = zero_x
         self.zero_y = zero_y
@@ -26,7 +26,6 @@ class car:
         self.rd = 0
         self.d = 0
         self.b = car_r * multiply_x
-        # x , y 左至右 上至下
         self.x1 = zero_x + -6 * multiply_x
         self.x2 = zero_x + 6 * multiply_x
         self.x3 = zero_x + 18 * multiply_x
@@ -37,11 +36,11 @@ class car:
         self.g1 = zero_y + -40 * multiply_y
         self.g2 = zero_y + -37 * multiply_y
 
-
+    #畫線 方程式
     def create_line(self, x1, y1, x2, y2, color):
         return canvas.create_line(zero_x+x1*multiply_x, zero_y+(y1*-1)*self.multiply_y,
                            zero_x+x2*multiply_x, zero_y+(y2*-1)*self.multiply_y, fill=color, width=3)
-
+    #畫車方程式
     def create_car(self):  
         
         # center coordinates, radius
@@ -55,6 +54,7 @@ class car:
 
         return canvas.create_oval(x0, y0, x1, y1, fill=self.car_collar)
     
+    #觀測距離方程式 針對每個邊界 做判斷取最小的值
     def sensor_distace(self, angle) :
         #sensor  sensor + angle judge
         x1d = (abs(self.car_x - self.x1 ) * -1 * (1/ math.cos(angle)))
@@ -148,6 +148,7 @@ class car:
             return 0
         else :
             return d
+    #邊界距離觀測
     def distance(self) :
         
         d1 = 100
@@ -175,6 +176,7 @@ class car:
         print('distance', d1, d2, d3, d4, d5, d6, d7)
         return min(d1, d2, d3, d4, d5, d6, d7)
 
+    #終點線觀測
     def goalLine(self):
 
         #goal line distance
@@ -187,7 +189,7 @@ class car:
         else: 
             return -1
             
-
+    #車子移動 -> 儲存目前車子所在數據, 回傳sensor 數據
     def car_move(self, tk, car, theta):
         
         degree = theta
@@ -300,7 +302,7 @@ class car:
 
         return (d, ld, rd, gd, dd)
 
-    #模糊規則
+    #模糊演算法
     def fuuzzyRule(self, d, ld, rd):
         d1 = d
         d2 = ld - rd 
@@ -421,7 +423,7 @@ car = car(zero_x, zero_y, multiply_x, multiply_y, car_x, car_y, car_angle)
 canvas = Canvas(tk, width=width, height=height, bg='ivory')
 canvas.pack(fill=BOTH, expand=1)
 canvas.pack()
-#我開心讀兩次檔
+#讀兩次檔
 f = open(r'case01.txt')
 i = 0
 x1 = 0
@@ -461,15 +463,7 @@ d,ld,rd,gd, dd = car.car_move(canvas, car_obj, 0)
 dd = 100
 
 while 1:
-    """ car.car_move(canvas, car_obj)
-    time.sleep(0.5) """
-    """ theta = int(input('Input the theta between +- 40: \n'))
-    if(theta == -1 ):
-        break """
-    #起始值 = 0
-    #邊界 >= 4
     
-    #if(d >= 3.1 and ld >=3.1 and rd >= 3.1  ):
     if(gd == -1):
         gd = 100
     if(gd >= 3 and dd >=3):
